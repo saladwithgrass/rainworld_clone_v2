@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3 uid="uid://d34a0dpgl2f3l"]
+
+[ext_resource type="Script" path="res://IK_Leg/ik_leg.gd" id="1_pj5c1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x6ekp"]
+size = Vector2(100, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cra4h"]
+size = Vector2(100, 4)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a6aub"]
+size = Vector2(50, 2)
+
+[node name="ik_leg" type="PinJoint2D"]
+node_b = NodePath("link1")
+motor_enabled = true
+script = ExtResource("1_pj5c1")
+
+[node name="link1" type="RigidBody2D" parent="."]
+unique_name_in_owner = true
+
+[node name="top_hitbox" type="CollisionShape2D" parent="link1"]
+position = Vector2(50, 0)
+shape = SubResource("RectangleShape2D_x6ekp")
+
+[node name="joint1" type="PinJoint2D" parent="link1"]
+unique_name_in_owner = true
+position = Vector2(100, 0)
+node_a = NodePath("..")
+node_b = NodePath("link2")
+motor_enabled = true
+
+[node name="link2" type="RigidBody2D" parent="link1/joint1"]
+unique_name_in_owner = true
+
+[node name="mid_hitbox" type="CollisionShape2D" parent="link1/joint1/link2"]
+position = Vector2(50, 0)
+shape = SubResource("RectangleShape2D_cra4h")
+
+[node name="joint2" type="PinJoint2D" parent="link1/joint1/link2"]
+unique_name_in_owner = true
+position = Vector2(100, 0)
+node_a = NodePath("..")
+node_b = NodePath("link3")
+motor_enabled = true
+
+[node name="link3" type="RigidBody2D" parent="link1/joint1/link2/joint2"]
+unique_name_in_owner = true
+
+[node name="end" type="Marker2D" parent="link1/joint1/link2/joint2/link3"]
+unique_name_in_owner = true
+position = Vector2(50, 0)
+
+[node name="bot_hitbox" type="CollisionShape2D" parent="link1/joint1/link2/joint2/link3"]
+position = Vector2(25, 0)
+shape = SubResource("RectangleShape2D_a6aub")

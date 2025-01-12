@@ -1,0 +1,58 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7rgsqqv0moxs"]
+
+[ext_resource type="Script" path="res://UI/cmd.gd" id="1_vwomb"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_888s8"]
+
+[node name="cmd" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_vwomb")
+
+[node name="cmd overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.165656, 0.165656, 0.165656, 0.333333)
+
+[node name="cmd container" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="cmd_container" type="VBoxContainer" parent="cmd container"]
+layout_mode = 2
+alignment = 2
+
+[node name="log_contatiner" type="VBoxContainer" parent="cmd container/cmd_container"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="sample cmd" type="Label" parent="cmd container/cmd_container/log_contatiner"]
+layout_mode = 2
+text = "some text"
+label_settings = SubResource("LabelSettings_888s8")
+
+[node name="cmd_input" type="LineEdit" parent="cmd container/cmd_container"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+placeholder_text = "enter command here"
+caret_blink = true
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="text_submitted" from="cmd container/cmd_container/cmd_input" to="." method="_on_cmd_input_text_submitted"]

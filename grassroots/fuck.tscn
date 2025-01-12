@@ -1,0 +1,26 @@
+[gd_scene load_steps=4 format=3 uid="uid://b8w18nery18n4"]
+
+[ext_resource type="PackedScene" uid="uid://d34a0dpgl2f3l" path="res://IK_Leg/ik_leg.tscn" id="1_5bymf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_svma7"]
+size = Vector2(777.5, 74)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cqqjk"]
+
+[node name="fuck" type="Node2D"]
+
+[node name="floor" type="StaticBody2D" parent="."]
+
+[node name="hitbox" type="CollisionShape2D" parent="floor"]
+position = Vector2(614.25, 600)
+shape = SubResource("RectangleShape2D_svma7")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(627, 444)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CircleShape2D_cqqjk")
+
+[node name="ik_leg" parent="CharacterBody2D" instance=ExtResource("1_5bymf")]
+rotation = -1.64934
+node_a = NodePath("..")

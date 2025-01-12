@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://cfslbkg4owq6b"]
+
+[ext_resource type="Script" path="res://UI/UI.gd" id="1_bfjr1"]
+[ext_resource type="PackedScene" uid="uid://b7rgsqqv0moxs" path="res://UI/cmd.tscn" id="2_75g7m"]
+
+[node name="PlayerUI" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bfjr1")
+
+[node name="cmd" parent="." instance=ExtResource("2_75g7m")]
+layout_mode = 1
+
+[node name="camera" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[connection signal="end_position" from="cmd" to="." method="_on_cmd_end_position"]
+[connection signal="forward_kinematics" from="cmd" to="." method="_on_cmd_forward_kinematics"]
+[connection signal="inverse_kinematics" from="cmd" to="." method="_on_cmd_inverse_kinematics"]
+[connection signal="set_joints" from="cmd" to="." method="_on_cmd_set_joints"]
