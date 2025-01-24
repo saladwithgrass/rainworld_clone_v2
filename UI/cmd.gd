@@ -28,7 +28,7 @@ func set_cmd(text:String):
 func _on_cmd_input_text_submitted(new_text: String) -> void:
 	print('command entered')
 	history.append(new_text)
-	add_log(new_text)
+	add_log('> ' + new_text)
 	parse_cmd(new_text)
 	%cmd_input.clear()
 	history_pointer = 0
@@ -89,8 +89,14 @@ var cmd_to_func = {
 	"sj" : parse_set_joints,
 	"set_joints" : parse_set_joints,
 	"ik" : parse_ik,
-	"eval" : parse_eval
+	"eval" : parse_eval,
+	"help" : parse_help
 }
+
+func parse_help(str_args:Array):
+	var available_cmd = PackedStringArray(cmd_to_func.keys())
+	add_success('Available commands: \n        ' + "\n        ".join(available_cmd))
+
 
 func parse_fk(str_args:Array):
 	# gather angles

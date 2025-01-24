@@ -52,8 +52,9 @@ func _on_cmd_inverse_kinematics(pos: Vector2) -> void:
 	if player_is_null():
 		return
 	if player_entity.has_method('ik_with_error'):
-		var ik_with_error = player_entity.ik_with_error(pos)
+		var ik_with_error = await player_entity.ik_with_error(pos)
 		var flattened = ik_with_error[0]
-		print(ik_with_error)
+		for i in len(flattened):
+			flattened[i] = rad_to_deg(flattened[i])
 		flattened.append(ik_with_error[1])
-		report_success('IK angles: %d %d %d with error %f' % flattened)
+		report_success('IK angles: %f %f %f with error %f' % flattened)
