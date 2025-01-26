@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://b1gynbam25eji"]
+[gd_scene load_steps=7 format=3 uid="uid://b1gynbam25eji"]
 
 [ext_resource type="Script" path="res://test_scene.gd" id="1_i1kdj"]
 [ext_resource type="PackedScene" uid="uid://d34a0dpgl2f3l" path="res://IK_Leg/ik_leg.tscn" id="1_ruvvj"]
 [ext_resource type="PackedScene" uid="uid://cfslbkg4owq6b" path="res://UI/UI.tscn" id="2_tjfar"]
+[ext_resource type="PackedScene" uid="uid://blnxs21gsck8l" path="res://spider/spider.tscn" id="4_tbnmd"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k3op2"]
 
@@ -18,7 +19,7 @@ script = ExtResource("1_i1kdj")
 player_entity = NodePath("../../dummy/ik_leg")
 
 [node name="dummy" type="CharacterBody2D" parent="."]
-position = Vector2(666, 423)
+position = Vector2(467, 186)
 
 [node name="ik_leg" parent="dummy" instance=ExtResource("1_ruvvj")]
 node_a = NodePath("..")
@@ -32,3 +33,6 @@ position = Vector2(672, 536)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="floor"]
 shape = SubResource("RectangleShape2D_hdqbm")
 disabled = true
+
+[node name="spider" parent="." instance=ExtResource("4_tbnmd")]
+position = Vector2(499, 432)

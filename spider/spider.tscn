@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://blnxs21gsck8l"]
+
+[ext_resource type="Script" path="res://spider/spider.gd" id="1_nvouv"]
+[ext_resource type="PackedScene" uid="uid://d34a0dpgl2f3l" path="res://IK_Leg/ik_leg.tscn" id="2_3jfhc"]
+[ext_resource type="PackedScene" uid="uid://b5dj4k25rm680" path="res://spider/target_marker.tscn" id="2_7er58"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2j7e3"]
+size = Vector2(181, 62)
+
+[node name="spider" type="Node2D"]
+script = ExtResource("1_nvouv")
+
+[node name="spider_body" type="CharacterBody2D" parent="."]
+
+[node name="ik_leg" parent="spider_body" instance=ExtResource("2_3jfhc")]
+unique_name_in_owner = true
+position = Vector2(68, 20)
+node_a = NodePath("..")
+
+[node name="link1" parent="spider_body/ik_leg" index="0"]
+rotation = 0.0946597
+
+[node name="link2" parent="spider_body/ik_leg/link1/joint1" index="0"]
+rotation = 0.481571
+
+[node name="link3" parent="spider_body/ik_leg/link1/joint1/link2/joint2" index="0"]
+rotation = 0.911911
+
+[node name="target_0" parent="spider_body" node_paths=PackedStringArray("controlled_leg") groups=["comfort_positions"] instance=ExtResource("2_7er58")]
+unique_name_in_owner = true
+position = Vector2(255, 133)
+controlled_leg = NodePath("../ik_leg")
+
+[node name="hitbox" type="CollisionShape2D" parent="spider_body"]
+shape = SubResource("RectangleShape2D_2j7e3")
+disabled = true
+
+[editable path="spider_body/ik_leg"]

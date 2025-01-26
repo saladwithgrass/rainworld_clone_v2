@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://b5dj4k25rm680"]
+
+[ext_resource type="Script" path="res://spider/target_marker.gd" id="1_iej2o"]
+
+[node name="target_marker" type="Polygon2D"]
+rotation = 0.785398
+scale = Vector2(4, 4)
+color = Color(0, 1, 0, 1)
+polygon = PackedVector2Array(-0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5)
+script = ExtResource("1_iej2o")

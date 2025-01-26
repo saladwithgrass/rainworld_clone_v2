@@ -1,4 +1,5 @@
 extends PinJoint2D
+class_name IKLeg
 
 @onready var joints:Array = [self, %joint1, %joint2, %end]
 @onready var links:Array[RigidBody2D] = [%link1, %link2, %link3]
@@ -74,6 +75,7 @@ func error_gradient(cur_angles:Array, target_position:Vector2, delta_step:float 
 	return gradient
 
 func inverse_kinematics(target_pos:Vector2, epsilon:float = 3):
+	
 	# initialize variables
 	const max_iterations = 1024
 	
@@ -95,7 +97,7 @@ func inverse_kinematics(target_pos:Vector2, epsilon:float = 3):
 		# set learning rate 
 		cur_percent = (max_iterations - iteration_count + 1.) / (max_iterations)
 		learning_rate = pow(cur_percent, 2) / 4900
-		print(cur_error, ' ', epsilon, ' ', cur_error > epsilon)
+		# print(cur_error, ' ', epsilon, ' ', cur_error > epsilon)
 		
 		# get gradient
 		grad = error_gradient(cur_angles, target_pos, learning_rate)
@@ -117,12 +119,15 @@ func inverse_kinematics(target_pos:Vector2, epsilon:float = 3):
 		# update counter
 		iteration_count += 1
 		set_joints(cur_angles)
-		await get_tree().create_timer(0.05).timeout
+		# await get_tree().create_timer(0.05).timeout
 		
 	# report results
-	print('IK finished in %d iterations with error %f;' % [iteration_count, cur_error])
+	# print('IK finished in %d iterations with error %f;' % [iteration_count, cur_error])
 	
 	return cur_angles
+
+func inverse_kinematics_global(target_pos_global:Vector2, epsilon:float=3):
+	return inverse_kinematics(to_local(target_pos_global), epsilon)
 
 func ik_with_error(target_pos:Vector2):
 	var ik_angles = await inverse_kinematics(target_pos)
@@ -135,3 +140,6 @@ func set_joints(angles:Array):
 
 func get_end_position():
 	return to_local(%end.global_position)
+	
+func get_end_global_position():
+	return %end.global_position

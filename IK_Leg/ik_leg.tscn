@@ -18,6 +18,7 @@ script = ExtResource("1_pj5c1")
 
 [node name="link1" type="RigidBody2D" parent="."]
 unique_name_in_owner = true
+collision_layer = 2
 
 [node name="top_hitbox" type="CollisionShape2D" parent="link1"]
 position = Vector2(50, 0)
@@ -32,6 +33,7 @@ motor_enabled = true
 
 [node name="link2" type="RigidBody2D" parent="link1/joint1"]
 unique_name_in_owner = true
+collision_layer = 2
 
 [node name="mid_hitbox" type="CollisionShape2D" parent="link1/joint1/link2"]
 position = Vector2(50, 0)
@@ -46,6 +48,7 @@ motor_enabled = true
 
 [node name="link3" type="RigidBody2D" parent="link1/joint1/link2/joint2"]
 unique_name_in_owner = true
+collision_layer = 2
 
 [node name="end" type="Marker2D" parent="link1/joint1/link2/joint2/link3"]
 unique_name_in_owner = true
