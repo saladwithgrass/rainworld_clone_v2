@@ -60,8 +60,8 @@ func error(current_angles:Array, target_position:Vector2):
 	position_loss -= target_position
 	position_loss = position_loss.length()
 	position_loss /= MAX_DISTANCE
-	
-	return position_loss + 0.05 * comfort_loss
+	print(comfort_loss)
+	return position_loss + 0.02*comfort_loss
 
 func error_gradient(cur_angles:Array, target_position:Vector2, delta_step:float = 0.005):
 	# get position in current configuration
@@ -124,15 +124,14 @@ func inverse_kinematics(target_pos:Vector2, epsilon:float = 0.01):
 		# get gradient
 		grad = error_gradient(cur_angles, target_pos, cur_percent*cur_percent*0.005)
 		
-		print(grad)
-		
 		# move in the direction of gradient
 		for i in len(grad):
-			grad_norm += grad[i]*grad[i]
+			# grad_norm += grad[i]*grad[i]
+			# print(cur_percent*cur_percent * grad[i])
 			cur_angles[i] -= cur_percent*cur_percent * grad[i]
 		
-		if grad_norm < gradient_delta*gradient_delta:
-			break
+		# if grad_norm < gradient_delta*gradient_delta:
+		#	break
 		
 		# update error
 		cur_error = error(
