@@ -4,6 +4,8 @@ extends Control
 
 const PLAYER_NULL_MSG = 'Call failed, player is null'
 
+var window_layers = []
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -11,11 +13,19 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	# toggle command line check
 	if event.is_action_released("command_line"):
-		$cmd.visible = !$cmd.visible
-		
+		if $cmd.visible:
+			window_layers.pop_back()
+			$cmd.visible = false
+		else:
+			window_layers.push_back($cmd)
+			$cmd.visible = true		
 	# exit check
 	if event.is_action_released("exit"):
-		get_tree().quit()
+		if len(window_layers) == 0:
+			get_tree().quit()
+		else:
+			window_layers[-1].visible = false
+			window_layers.pop_back()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

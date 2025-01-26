@@ -35,4 +35,5 @@ shape = SubResource("RectangleShape2D_hdqbm")
 disabled = true
 
 [node name="spider" parent="." instance=ExtResource("4_tbnmd")]
+process_mode = 4
 position = Vector2(499, 432)

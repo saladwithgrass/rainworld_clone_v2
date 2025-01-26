@@ -16,15 +16,16 @@ script = ExtResource("1_nvouv")
 unique_name_in_owner = true
 position = Vector2(68, 20)
 node_a = NodePath("..")
+bias = 0.9
 
 [node name="link1" parent="spider_body/ik_leg" index="0"]
-rotation = 0.0946597
+rotation = -0.349066
 
 [node name="link2" parent="spider_body/ik_leg/link1/joint1" index="0"]
-rotation = 0.481571
+rotation = 0.785398
 
 [node name="link3" parent="spider_body/ik_leg/link1/joint1/link2/joint2" index="0"]
-rotation = 0.911911
+rotation = 1.0472
 
 [node name="target_0" parent="spider_body" node_paths=PackedStringArray("controlled_leg") groups=["comfort_positions"] instance=ExtResource("2_7er58")]
 unique_name_in_owner = true
