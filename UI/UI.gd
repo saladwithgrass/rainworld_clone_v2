@@ -73,3 +73,11 @@ func _on_cmd_inverse_kinematics(pos: Vector2) -> void:
 			flattened[i] = rad_to_deg(flattened[i])
 		flattened.append(ik_with_error[1])
 		report_success('IK angles: %f %f %f with error %f' % flattened)
+
+
+func _on_cmd_step_trajectory(start_pos: Vector2, end_pos: Vector2) -> void:
+	if player_is_null():
+		return
+	if player_entity.has_method("step_trajectory"):
+		var result = rad_to_deg(player_entity.step_trajectory(start_pos, end_pos))
+		report_success("%f" % result)

@@ -39,12 +39,16 @@ func get_joint_angles():
 
 func forward_kinematics(angles:Array):
 	var main_transform = Transform2D(0, Vector2.ZERO)
+	var cur_rotation:float
+	var cur_translation:Vector2
 	for idx in len(angles):
-		var cur_rotation = angles[idx]
-		var cur_translation = joints[idx].position
+		cur_rotation = angles[idx]
+		if idx != 0:
+			cur_translation = joints[idx].position
+		else:
+			cur_translation = Vector2.ZERO
 		main_transform *= Transform2D(cur_rotation, cur_translation)
 	return main_transform * joints[len(angles)].position
-
 
 func error(current_angles:Array, target_position:Vector2):
 	# also error should be normalized
@@ -60,8 +64,7 @@ func error(current_angles:Array, target_position:Vector2):
 	position_loss -= target_position
 	position_loss = position_loss.length()
 	position_loss /= MAX_DISTANCE
-	print(comfort_loss)
-	return position_loss + 0.02*comfort_loss
+	return position_loss + 0.05 * comfort_loss
 
 func error_gradient(cur_angles:Array, target_position:Vector2, delta_step:float = 0.005):
 	# get position in current configuration
@@ -113,7 +116,6 @@ func inverse_kinematics(target_pos:Vector2, epsilon:float = 0.01):
 	var grad:Array = []
 	var grad_norm = 0
 	var cur_percent
-	print(cur_error)
 	while cur_error >= epsilon and iteration_count < max_iterations:
 		# set learning rate 
 		cur_percent = (max_iterations - iteration_count + 1.) / (max_iterations)
@@ -142,7 +144,7 @@ func inverse_kinematics(target_pos:Vector2, epsilon:float = 0.01):
 		# update counter
 		iteration_count += 1
 		set_joints(cur_angles)
-		await get_tree().create_timer(0.05).timeout
+		# await get_tree().create_timer(0.05).timeout
 		
 	# report results
 	print('IK finished in %d iterations with error %f;' % [iteration_count, cur_error])
@@ -166,6 +168,18 @@ func adjust_comfort():
 	# calculate comfort for each joint
 	# for idx in len(links):
 	# 	links[idx].angular_velocity = sign(comfort_function(idx)) * max_velocities[idx]
+
+func step_trajectory(start_pos:Vector2, target_pos:Vector2, angle_delta:float=0.05):
+	# we consider that the two points
+	# we want to traverse are diametrically
+	# opposed to each other on a circle
+	var center = (target_pos + start_pos) / 2
+	
+	# x = r cos(theta)
+	# y = r sin(theta)
+	# get start angle
+	var theta = (start_pos - center).angle_to(target_pos - center)
+	return theta
 
 func set_joints(angles:Array):
 	for idx in range(len(angles)):

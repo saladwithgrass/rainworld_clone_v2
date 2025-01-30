@@ -23,3 +23,4 @@ anchor_mode = 0
 [connection signal="forward_kinematics" from="cmd" to="." method="_on_cmd_forward_kinematics"]
 [connection signal="inverse_kinematics" from="cmd" to="." method="_on_cmd_inverse_kinematics"]
 [connection signal="set_joints" from="cmd" to="." method="_on_cmd_set_joints"]
+[connection signal="step_trajectory" from="cmd" to="." method="_on_cmd_step_trajectory"]

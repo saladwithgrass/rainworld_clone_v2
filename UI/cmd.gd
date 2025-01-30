@@ -81,6 +81,7 @@ signal forward_kinematics(angles:Array)
 signal end_position()
 signal set_joints(angles:Array)
 signal inverse_kinematics(pos:Vector2)
+signal step_trajectory(start_pos:Vector2, end_pos:Vector2)
 
 var cmd_to_func = {
 	"fk" : parse_fk,
@@ -90,6 +91,8 @@ var cmd_to_func = {
 	"set_joints" : parse_set_joints,
 	"ik" : parse_ik,
 	"eval" : parse_eval,
+	"step_trajectory" : parse_step_trajectory,
+	"st" : parse_step_trajectory,
 	"help" : parse_help
 }
 
@@ -146,6 +149,15 @@ func parse_eval(str_args:Array):
 		add_success(str(result))
 	else:
 		add_error('Execution failed.')
+
+func parse_step_trajectory(str_args:Array):
+	var float_args = str_list_to_float_list(str_args)
+	if len(float_args) != 4:
+		add_error('step_trajectory requires exactly 4 arguments')
+		return
+	var start_pos = Vector2(float_args[0], float_args[1])
+	var end_pos = Vector2(float_args[2], float_args[3])
+	step_trajectory.emit(start_pos, end_pos)
 
 func parse_cmd(text:String):
 	text = text.lstrip(' ').rstrip(' ')

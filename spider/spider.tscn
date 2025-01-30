@@ -29,7 +29,7 @@ rotation = 1.0472
 
 [node name="target_0" parent="spider_body" node_paths=PackedStringArray("controlled_leg") groups=["comfort_positions"] instance=ExtResource("2_7er58")]
 unique_name_in_owner = true
-position = Vector2(255, 133)
+position = Vector2(258, 78)
 controlled_leg = NodePath("../ik_leg")
 
 [node name="hitbox" type="CollisionShape2D" parent="spider_body"]
