@@ -49,7 +49,7 @@ func add_error(text:String):
 func add_success(text:String):
 	add_log('    ' + text, Color.GREEN)
 
-func str_list_to_float_list(str_list:Array):
+func str_list_to_angles(str_list:Array):
 	var args = []
 	for arg in str_list:
 		if arg.is_valid_float():
@@ -74,6 +74,16 @@ func str_list_to_vec(str_list:Array):
 		else:
 			add_error('Could not convert string list to vector. \
 			Argument *%s* is not valid float.' % str_list[idx])
+			return null
+	return result
+
+func str_list_to_array(str_list:Array):
+	var result = []
+	for str_arg in str_list:
+		if str_arg.is_valid_float():
+			result.append(str_arg.to_float())
+		else:
+			add_error(str_arg + ' is not valid float.')
 			return null
 	return result
 
@@ -106,7 +116,7 @@ func parse_fk(str_args:Array):
 	if len(str_args) == 0:
 		add_error('Arguments expected')
 		return
-	var args = str_list_to_float_list(str_args)
+	var args = str_list_to_angles(str_args)
 	if args == null:
 		return
 	forward_kinematics.emit(args)
@@ -120,7 +130,7 @@ func parse_set_joints(str_args:Array):
 	if len(str_args) == 0:
 		add_error('Arguments expected')
 		return
-	var args = str_list_to_float_list(str_args)
+	var args = str_list_to_angles(str_args)
 	if args == null:
 		return
 	set_joints.emit(args)
@@ -151,7 +161,10 @@ func parse_eval(str_args:Array):
 		add_error('Execution failed.')
 
 func parse_step_trajectory(str_args:Array):
-	var float_args = str_list_to_float_list(str_args)
+	var float_args = str_list_to_array(str_args)
+	if float_args == null:
+		add_error('Could not parse trajectory.')
+		return
 	if len(float_args) != 4:
 		add_error('step_trajectory requires exactly 4 arguments')
 		return

@@ -12,28 +12,49 @@ script = ExtResource("1_nvouv")
 
 [node name="spider_body" type="CharacterBody2D" parent="."]
 
-[node name="ik_leg" parent="spider_body" instance=ExtResource("2_3jfhc")]
+[node name="ik_leg0" parent="spider_body" instance=ExtResource("2_3jfhc")]
 unique_name_in_owner = true
 position = Vector2(68, 20)
 node_a = NodePath("..")
 bias = 0.9
 
-[node name="link1" parent="spider_body/ik_leg" index="0"]
+[node name="link1" parent="spider_body/ik_leg0" index="0"]
 rotation = -0.349066
 
-[node name="link2" parent="spider_body/ik_leg/link1/joint1" index="0"]
+[node name="link2" parent="spider_body/ik_leg0/link1/joint1" index="0"]
 rotation = 0.785398
 
-[node name="link3" parent="spider_body/ik_leg/link1/joint1/link2/joint2" index="0"]
+[node name="link3" parent="spider_body/ik_leg0/link1/joint1/link2/joint2" index="0"]
 rotation = 1.0472
+
+[node name="ik_leg1" parent="spider_body" instance=ExtResource("2_3jfhc")]
+unique_name_in_owner = true
+position = Vector2(-71, 21)
+node_a = NodePath("..")
+bias = 0.9
+
+[node name="link1" parent="spider_body/ik_leg1" index="0"]
+rotation = -2.61112
+
+[node name="link2" parent="spider_body/ik_leg1/link1/joint1" index="0"]
+rotation = -1.17293
+
+[node name="link3" parent="spider_body/ik_leg1/link1/joint1/link2/joint2" index="0"]
+rotation = -0.835893
 
 [node name="target_0" parent="spider_body" node_paths=PackedStringArray("controlled_leg") groups=["comfort_positions"] instance=ExtResource("2_7er58")]
 unique_name_in_owner = true
 position = Vector2(258, 78)
-controlled_leg = NodePath("../ik_leg")
+controlled_leg = NodePath("../ik_leg0")
+
+[node name="target_1" parent="spider_body" node_paths=PackedStringArray("controlled_leg") groups=["comfort_positions"] instance=ExtResource("2_7er58")]
+unique_name_in_owner = true
+position = Vector2(-241, 79)
+controlled_leg = NodePath("../ik_leg1")
 
 [node name="hitbox" type="CollisionShape2D" parent="spider_body"]
 shape = SubResource("RectangleShape2D_2j7e3")
 disabled = true
 
-[editable path="spider_body/ik_leg"]
+[editable path="spider_body/ik_leg0"]
+[editable path="spider_body/ik_leg1"]

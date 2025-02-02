@@ -14,22 +14,31 @@ class_name IKLeg
 
 var MAX_DISTANCE
 
+#region -------------ANIMATION PARAMETERS------------------- 
+var is_in_animation:bool = false
+var current_animation:Array[Array] = []
+var cur_animation_step:int = 0
+var animation_framerate:float = 10 / 0.05
+
+#region --------------KEEP IN PLACE VARIABLES-------------------
+var is_anchored:bool = true
+var anchor_position:Vector2 = Vector2.ZERO
+
 func disable_gravity(node:Node2D):
 	if node is RigidBody2D:
 		node.gravity_scale = 0
 		node.freeze = true
 	for child in node.get_children():
-		disable_gravity(child)
+		if child is Node2D:
+			disable_gravity(child)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	disable_gravity(self)
 	MAX_DISTANCE = forward_kinematics([0, 0, 0]).length() * 2
+	anchor_position = get_end_global_position()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	adjust_comfort()
-
+#region -----------------KINEMATICS----------------
 func get_joint_angles():
 	var result = []
 	result.resize(len(links))
@@ -66,7 +75,7 @@ func error(current_angles:Array, target_position:Vector2):
 	position_loss /= MAX_DISTANCE
 	return position_loss + 0.05 * comfort_loss
 
-func error_gradient(cur_angles:Array, target_position:Vector2, delta_step:float = 0.005):
+func error_gradient(cur_angles:Array, target_position:Vector2, delta_step:float = 0.001):
 	# get position in current configuration
 	
 	# get error in current configuration
@@ -97,7 +106,7 @@ func error_gradient(cur_angles:Array, target_position:Vector2, delta_step:float 
 		
 	return gradient
 
-func inverse_kinematics(target_pos:Vector2, epsilon:float = 0.01):
+func inverse_kinematics(target_pos:Vector2, epsilon:float = 0.005):
 	
 	# initialize variables
 	const max_iterations = 1024
@@ -143,43 +152,100 @@ func inverse_kinematics(target_pos:Vector2, epsilon:float = 0.01):
 
 		# update counter
 		iteration_count += 1
-		set_joints(cur_angles)
+		# set_joints(cur_angles)
 		# await get_tree().create_timer(0.05).timeout
 		
 	# report results
-	print('IK finished in %d iterations with error %f;' % [iteration_count, cur_error])
+	# print('IK finished in %d iterations with error %f;' % [iteration_count, cur_error])
 	
 	return cur_angles
 
-func inverse_kinematics_global(target_pos_global:Vector2, epsilon:float=0.05):
-	return await inverse_kinematics(to_local(target_pos_global), epsilon)
+func inverse_kinematics_global(target_pos_global:Vector2, epsilon:float=0.009):
+	return inverse_kinematics(to_local(target_pos_global), epsilon)
 
 func ik_with_error(target_pos:Vector2):
 	var ik_angles = await inverse_kinematics(target_pos)
 	var ik_error = error(ik_angles, target_pos)
 	return [ik_angles, ik_error]
 
-func comfort_function(idx:int):
-	# returns comfort on a scale 0 to 1
-	return comfort_angles[idx] - links[idx].rotation
+func keep_in_place(target_pos:Vector2):
+	is_anchored = true
+	anchor_position = target_pos
 
-func adjust_comfort():
-	return
-	# calculate comfort for each joint
-	# for idx in len(links):
-	# 	links[idx].angular_velocity = sign(comfort_function(idx)) * max_velocities[idx]
+#region --------------STEP ANIMATION-----------------
 
-func step_trajectory(start_pos:Vector2, target_pos:Vector2, angle_delta:float=0.05):
+func create_trajectory_texture(trajectory:Array[Vector2]):
+	var viewport = get_viewport_rect()
+	var image = Image.create(viewport.size.x, viewport.size.y, false, Image.FORMAT_RGBA8)
+	for point in trajectory:
+		image.set_pixelv(point, Color.MAGENTA)
+	var texture = ImageTexture.create_from_image(image)
+	$CanvasLayer/TextureRect.texture = texture
+
+func step_trajectory(start_pos:Vector2, target_pos:Vector2, division_steps:int=10):
+
 	# we consider that the two points
 	# we want to traverse are diametrically
 	# opposed to each other on a circle
 	var center = (target_pos + start_pos) / 2
+	var current_vector  = start_pos - center
+	var delta_step = PI / division_steps
+	var result:Array[Array] = []
+	var positions:Array[Vector2] = []
+	positions.resize(division_steps)
+	result.resize(division_steps)
 	
-	# x = r cos(theta)
-	# y = r sin(theta)
-	# get start angle
-	var theta = (start_pos - center).angle_to(target_pos - center)
-	return theta
+	var direction = sign(current_vector.angle_to(global_position - center))
+	
+	
+	for angle_idx in range(division_steps):
+		current_vector = current_vector.rotated(direction * delta_step)
+		positions.append(current_vector + center)
+		result[angle_idx] = inverse_kinematics_global(current_vector + center)
+	create_trajectory_texture(positions)
+	return result
+
+func run_animation(trajectory:Array[Array]):
+	# print('running anuimation')
+	is_anchored = false
+	self.current_animation = trajectory
+	self.is_in_animation = true
+	self.cur_animation_step = 0
+	$CanvasLayer/TextureRect.visible = true
+	%animation_timer.start(1 / animation_framerate)
+
+func stop_animation():
+	# print('stopping animation')
+	is_anchored = true
+	self.current_animation = []
+	self.is_in_animation = false
+	$CanvasLayer/TextureRect.visible = false
+	%animation_timer.stop()
+
+func create_and_run_step(next_global_position:Vector2):
+	var new_trajectory = step_trajectory(
+		get_end_global_position(),
+		next_global_position
+	)
+	run_animation(new_trajectory)
+
+func execute_next_animation_step():
+	# anchor_position = current_animation[cur_animation_step]
+	var next_angles = current_animation[cur_animation_step]
+	set_joints(next_angles)
+	anchor_position = to_global(forward_kinematics(next_angles))
+	cur_animation_step += 1
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	if is_anchored:
+		set_joints(inverse_kinematics_global(anchor_position))
+
+func _on_animation_timer_timeout() -> void:
+	if cur_animation_step < len(current_animation):
+		execute_next_animation_step()
+	else:
+		stop_animation()
 
 func set_joints(angles:Array):
 	for idx in range(len(angles)):
